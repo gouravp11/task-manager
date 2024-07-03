@@ -5,13 +5,12 @@ import TimeInput from "./TimeInput";
 const AddTask = () => {
   const { tasks, setTasks } = useContext(appContext);
   const { addTask, setAddTask } = useContext(appContext);
-  const validateTime = (time) => {
-    const timeFormat = /^(0[1-9]|1[0-2]):[0-5][0-9] (AM|PM)$/i;
-    if (!timeFormat.test(time)) {
-      console.log("Invalid time format. Please enter time as hh:mm AM/PM");
-      return false;
-    }
+  const addTaskToggler = () => {
+    setAddTask(!addTask);
   };
+  const validInput = (val) => {
+    return val.replace(/[^0-9]+/g, "");
+  }; 
   const [formData, setFormData] = useState({
     title: "",
     starttime: { hour: "", minute: "" },
@@ -29,46 +28,38 @@ const AddTask = () => {
       description: "",
     });
   };
-  const handleTime = (e, action, timePeriod) => {
-    // console.log(formData.starttime)
-    if (action === "hour") {
-      if (timePeriod == "start")
-        setFormData({
-          ...formData,
-          starttime: { ...formData.starttime, hour: e.target.value },
-        });
-      else if (timePeriod == "end")
-        setFormData({
-          ...formData,
-          endtime: { ...formData.endtime, hour: e.target.value },
-        });
-      // console.log(formData);
-    } else if (action === "minute") {
-      if (timePeriod == "start")
-        setFormData({
-          ...formData,
-          starttime: { ...formData.starttime, minute: e.target.value },
-        });
-      else if (timePeriod == "end")
-        setFormData({
-          ...formData,
-          endtime: { ...formData.endtime, minute: e.target.value },
-        });
-      // console.log(formData);
-    }
-  };
-  const addTaskToggler = () => {
-    setAddTask(!addTask);
-  };
-  const inputTimeValueSetter = (action, timePeriod) => {
-    if (action === "hour") {
-      if (timePeriod == "start") return formData.starttime.hour;
-      else if (timePeriod == "end") return formData.endtime.hour;
-    } else if (action === "minute") {
-      if (timePeriod == "start") return formData.starttime.minute;
-      else if (timePeriod == "end") return formData.endtime.minute;
-    }
-  };
+  const handleStartTime = (e, action) => {
+    if(action === "hour")
+      setFormData({
+        ...formData,
+        starttime: { ...formData.starttime, hour: validInput(e.target.value) },
+      });
+    else if(action === "minute")
+      setFormData({
+        ...formData,
+        starttime: { ...formData.starttime, minute: validInput(e.target.value) },
+      });
+  }
+  const handleEndTime = (e, action) => {
+    if(action === "hour")
+      setFormData({
+        ...formData,
+        endtime: { ...formData.endtime, hour: validInput(e.target.value) },
+      });
+    else if(action === "minute")
+      setFormData({
+        ...formData,
+        endtime: { ...formData.endtime, minute: validInput(e.target.value) },
+      });
+  }
+  const startTimeInputValueSetter = (action) => {
+    if (action === "hour") return formData.starttime.hour
+    else if (action === "minute") return formData.starttime.minute
+  }
+  const endTimeInputValueSetter = (action) => {
+    if (action === "hour") return formData.endtime.hour
+    else if (action === "minute") return formData.endtime.minute
+  }
   return (
     <div
       className={`w-full bg-zinc-200 rounded-md relative p-3 mb-5 ${
@@ -88,17 +79,13 @@ const AddTask = () => {
         />
         <div className="time flex items-center text-zinc-500 gap-2 text-xs my-1">
           <TimeInput
-            setFormData={setFormData}
-            handleTime={handleTime}
-            timePeriod="start"
-            inputTimeValueSetter={inputTimeValueSetter}
+            handleTime={handleStartTime}
+            setValue={startTimeInputValueSetter}
           />
           <span>-</span>
           <TimeInput
-            setFormData={setFormData}
-            handleTime={handleTime}
-            timePeriod="end"
-            inputTimeValueSetter={inputTimeValueSetter}
+            handleTime={handleEndTime}
+            setValue={endTimeInputValueSetter}
           />
         </div>
         <input

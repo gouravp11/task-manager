@@ -1,19 +1,15 @@
 import React, { useState } from "react";
 
 const TimeInput = ({
-  setFormData,
   handleTime,
-  timePeriod,
-  inputTimeValueSetter,
+  setValue
 }) => {
   const [hours, setHours] = useState("");
   const [minutes, setMinutes] = useState("");
   const [error, setError] = useState("");
-
-  const validInput = (val) => {
+const validInput = (val) => {
     return val.replace(/[^0-9]+/g, "");
   };
-
   const setMax = (id) => {
     if (id === "hours") return 23;
     return 59;
@@ -26,7 +22,6 @@ const TimeInput = ({
       setError("");
     }
   };
-
   const handleKeyUp = (e, setter, id) => {
     let val = e.target.value;
     val = validInput(val);
@@ -36,38 +31,11 @@ const TimeInput = ({
 
     if (+val > max) {
       throwErr(`At max ${max} ${id}`, true);
-      e.target.classList.add("invalid");
     } else {
       throwErr("");
-      e.target.classList.remove("invalid");
     }
 
     setter(val);
-  };
-  const validInputSetter = (e, action) => {
-    if (action === "hour") {
-      if (timePeriod == "start")
-        setFormData((prev) => ({
-          ...prev,
-          starttime: { ...prev.starttime, hour: validInput(e.target.value) },
-        }));
-      else if (timePeriod == "end")
-        setFormData((prev) => ({
-          ...prev,
-          endtime: { ...prev.endtime, hour: validInput(e.target.value) },
-        }));
-    } else if (action === "minute") {
-      if (timePeriod == "start")
-        setFormData((prev) => ({
-          ...prev,
-          starttime: { ...prev.starttime, minute: validInput(e.target.value) },
-        }));
-      else if (timePeriod == "end")
-        setFormData((prev) => ({
-          ...prev,
-          endtime: { ...prev.endtime, minute: validInput(e.target.value) },
-        }));
-    }
   };
   return (
     <div>
@@ -77,13 +45,12 @@ const TimeInput = ({
             placeholder="hh"
             type="number"
             id="hours"
-            value={hours}
+            value={setValue("hour")}
             onKeyUp={(e) => handleKeyUp(e, setHours, "hours")}
             onChange={(e) => {
               // validInputSetter(e,"hour")
-              setHours(validInput(e.target.value));
-              setFormData((prev) => ({ ...prev }));
-              handleTime(e, "hour", timePeriod);
+              // setHours(validInput(e.target.value));
+              handleTime(e, "hour");
             }}
             className="w-10 text-center outline-none"
           />
@@ -94,12 +61,12 @@ const TimeInput = ({
             placeholder="mm"
             type="number"
             id="minutes"
-            value={inputTimeValueSetter("minute", timePeriod)}
+            value={setValue("minute")}
             onKeyUp={(e) => handleKeyUp(e, setMinutes, "minutes")}
             onChange={(e) => {
-              validInputSetter(e, "minute");
-              setMinutes(validInput(e.target.value));
-              handleTime(e, "minute", timePeriod);
+              // validInputSetter(e, "minute");
+              // setMinutes(validInput(e.target.value));
+              handleTime(e, "minute");
             }}
             className="w-10 text-center outline-none  "
           />
