@@ -1,83 +1,82 @@
 import React, { useState } from "react";
+import { GrFormClock } from "react-icons/gr";
 
-const TimeInput = ({
-  handleTime,
-  setValue
-}) => {
-  const [hours, setHours] = useState("");
-  const [minutes, setMinutes] = useState("");
-  const [error, setError] = useState("");
-const validInput = (val) => {
-    return val.replace(/[^0-9]+/g, "");
-  };
-  const setMax = (id) => {
-    if (id === "hours") return 23;
-    return 59;
-  };
-
-  const throwErr = (mssg, invalid = false) => {
-    if (invalid) {
-      setError(mssg);
-    } else {
-      setError("");
-    }
-  };
-  const handleKeyUp = (e, setter, id) => {
-    let val = e.target.value;
-    val = validInput(val);
-    val = val.length > 2 ? val.substring(0, 2) : val;
-
-    let max = setMax(id);
-
-    if (+val > max) {
-      throwErr(`At max ${max} ${id}`, true);
-    } else {
-      throwErr("");
-    }
-
-    setter(val);
-  };
+const TimeInput = ({ timeInputHandler, assignTimeValue, errHandle }) => {
+  const [pick, setPick] = useState(false);
+  const {setError, act}= errHandle;
   return (
-    <div>
-      <div className="flex items-center text-md bg-white overflow-hidden rounded-md bg p-1 relative">
-        <label className="relative">
+    <div className="wrapper w-28 relative">
+      <div className={`w-full overflow-hidden rounded-md border-[1px] border-zinc-200 flex gap-[.1px]`}>
+        <div className={`time w-[95%] h-5 flex justify-between items-center relative bg-white`}>
           <input
+            autoFocus
+            type="number"
+            className={`w-[45%] h-full text-center text-sm px-1 outline-none`}
+            name="hour"
             placeholder="hh"
-            type="number"
-            id="hours"
-            value={setValue("hour")}
-            onKeyUp={(e) => handleKeyUp(e, setHours, "hours")}
+            value={assignTimeValue("hours")}
             onChange={(e) => {
-              // validInputSetter(e,"hour")
-              // setHours(validInput(e.target.value));
-              handleTime(e, "hour");
+              let val = e.target.value;
+              Number(val) <= 23 && timeInputHandler(val, "hours");
             }}
-            className="w-10 text-center outline-none"
+            min="0"
+            max="23"
           />
-        </label>
-        <span>:</span>
-        <label className="relative">
+          <span className="absolute font-bold left-1/2 -translate-x-1/2 text-xs">
+            :
+          </span>
           <input
-            placeholder="mm"
             type="number"
-            id="minutes"
-            value={setValue("minute")}
-            onKeyUp={(e) => handleKeyUp(e, setMinutes, "minutes")}
+            className={`w-[45%] h-full text-center text-sm px-1 outline-none`}
+            name="minute"
+            placeholder="mm"
+            value={assignTimeValue("minutes")}
             onChange={(e) => {
-              // validInputSetter(e, "minute");
-              // setMinutes(validInput(e.target.value));
-              handleTime(e, "minute");
+              let val = e.target.value;
+              Number(val) <= 59 && timeInputHandler(val, "minutes");
             }}
-            className="w-10 text-center outline-none  "
+            min="0"
+            max="59"
           />
-        </label>
+        </div>
+        <span
+          onClick={() => setPick(!pick)}
+          className="flex items-center bg-zinc-300 cursor-pointer"
+        >
+          <GrFormClock />
+        </span>
       </div>
       <div
-        className={`absolute bottom-0 right-0 p-3 sm:bottom-[32%] sm:right-[40%] text-red-600 ${
-          error ? "block" : "hidden"
+        className={`picker bg-zinc-400 w-[85%] flex gap-[1px] absolute transition-all origin-top  z-[2] ${
+          pick ? "scale-y-1" : "scale-y-0"
         }`}
       >
-        {error}
+        <div className="pick-hours w-1/2 h-44 overflow-y-auto bg-white flex flex-col items-center ">
+          {Array.from({ length: 24 }, (_, i) => i).map((h, i) => (
+            <span
+              className="w-full text-center cursor-pointer mb-3 hover:bg-zinc-200"
+              key={i}
+              onClick={() => {
+                timeInputHandler(h.toString(), "hours");
+              }}
+            >
+              {h}
+            </span>
+          ))}
+        </div>
+        <div className="pick-minutes w-1/2 h-44 overflow-y-auto bg-white flex flex-col items-center">
+          {Array.from({ length: 60 }, (_, i) => i).map((m, i) => (
+            <span
+              className="w-full text-center cursor-pointer mb-3 hover:bg-zinc-200"
+              key={i}
+              onClick={() => {
+                timeInputHandler(m.toString() , "minutes")
+              }}
+            >
+              {m}
+            </span>
+          ))}
+        </div>
       </div>
     </div>
   );

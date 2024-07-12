@@ -7,7 +7,7 @@ import Context from './utils/context.jsx'
 // import { Context } from './utils/Context'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <Context>
+<Context>
 <BrowserRouter>
   {/* <React.StrictMode> */}
     <App />

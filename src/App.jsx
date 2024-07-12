@@ -3,8 +3,6 @@ import Nav from "./components/Nav";
 import Tasks from "./components/Tasks";
 import { appContext } from "./utils/context";
 import TaskNav from "./components/TaskNav";
-import AddTask from "./components/AddTask";
-import TimeInput from "./components/TimeInput";
 
 const App = () => {
   const {navToggle, setNavToggle} = useContext(appContext);
